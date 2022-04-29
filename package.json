@@ -31,7 +31,7 @@
     "fastify-plugin": "^3.0.1",
     "fastify-static": "^4.5.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.1.1",
+    "mongoose": "^6.3.1",
     "passport-google-oauth20": "^2.0.0",
     "sharp": "^0.29.3",
     "slugify": "^1.6.4",
