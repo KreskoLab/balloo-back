@@ -39,13 +39,13 @@ const adminAuthRoute: FastifyPluginAsync = async (fastify, options) => {
   });
 
   fastify.get<{ Headers: AuthHeaderI }>('/me', async (request, reply) => {
-    let accessToken = request.headers['Authorization']?.replace('Bearer', '').trim();
+    const accessToken = request.headers['authorization']?.replace('Barear', '').trim();
 
     if (accessToken) {
       let validAccessToken = await fastify.verifyAccessToken(accessToken);
 
       if (validAccessToken) {
-        let admin = await AdminModel.findById(validAccessToken.id).select('login');
+        const admin = await AdminModel.findById(validAccessToken.id).select('login');
         reply.code(200).send({ user: admin });
       }
     } else {

@@ -37,9 +37,9 @@ const jwtPlugin: FastifyPluginCallback = (fastify, opts, done) => {
 
   fastify.decorate('isAdmin', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const authHeader = request.headers['Authorization'] as string;
+      const authHeader = request.headers['authorization'] as string;
 
-      if (authHeader && fastify.verifyAccessToken(authHeader.replace('Bearer', '').trim())) {
+      if (authHeader && fastify.verifyAccessToken(authHeader.replace('Barear', '').trim())) {
         return true;
       } else throw new Error();
     } catch (e) {

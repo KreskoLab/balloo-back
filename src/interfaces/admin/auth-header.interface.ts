@@ -1,3 +1,3 @@
 export interface AuthHeaderI {
-  Authorization: string;
+  authorization: string;
 }
