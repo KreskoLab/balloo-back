@@ -20,6 +20,7 @@ import productRoute from './routes/admin/product';
 import subcategoryRoute from './routes/admin/subcategory';
 import categoryRoute from './routes/admin/category';
 import subcategoryUserRoute from './routes/subcategory';
+import categoryUserRoute from './routes/category';
 
 const fastify: FastifyInstance<Server, IncomingMessage, ServerResponse> = Fastify({
   logger: false,
@@ -51,6 +52,7 @@ const start = async () => {
     //routes
     await fastify.register(authRoute);
     await fastify.register(subcategoryUserRoute);
+    await fastify.register(categoryUserRoute);
 
     //admin routes
     await fastify.register(adminAuthRoute, { prefix: 'admin' });
