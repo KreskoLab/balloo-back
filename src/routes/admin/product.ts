@@ -45,35 +45,38 @@ const productRoute: FastifyPluginAsync = async (fastify, options) => {
       const imageName = await saveImage(form.image);
 
       const subcategoryDoc = await SubcategoryModel.findById(form.subcategory.value).populate('filter');
-      const filter = subcategoryDoc.filter;
 
-      filter.filters.forEach((filter, index) => {
-        productProperties.push({
-          lang: filter.lang,
-          name: filter.value,
-          slug: slugItem(filter.value),
-          value: formProperties.find((item) => item.lang === filter.lang)!.value,
-          valueSlug: slugItem(formProperties.find((item) => item.lang === filter.lang)!.value),
+      if (subcategoryDoc) {
+        const filter = subcategoryDoc.filter;
+
+        filter.filters.forEach((filter, index) => {
+          productProperties.push({
+            lang: filter.lang,
+            name: filter.value,
+            slug: slugItem(filter.value),
+            value: formProperties.find((item) => item.lang === filter.lang)!.value,
+            valueSlug: slugItem(formProperties.find((item) => item.lang === filter.lang)!.value),
+          });
         });
-      });
 
-      const product = new ProductModel({
-        name: names,
-        slug: slugItem(names[0].value),
-        subcategory: form.subcategory.value,
-        image: imageName,
-        price: form.price.value,
-        code: form.code.value,
-        quantity: form.quantity.value,
-        properties: productProperties,
-      });
+        const product = new ProductModel({
+          name: names,
+          slug: slugItem(names[0].value),
+          subcategory: form.subcategory.value,
+          image: imageName,
+          price: form.price.value,
+          code: form.code.value,
+          quantity: form.quantity.value,
+          properties: productProperties,
+        });
 
-      await product.save().then(async (res) => {
-        subcategoryDoc.products.push(res._id);
-        await subcategoryDoc.save();
-      });
+        await product.save().then(async (res) => {
+          subcategoryDoc.products.push(res._id);
+          await subcategoryDoc.save();
+        });
 
-      reply.code(200).send(product);
+        reply.code(200).send(product);
+      } else reply.code(404).send();
     } else reply.code(422).send();
   });
 };
