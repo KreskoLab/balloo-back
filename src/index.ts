@@ -6,6 +6,7 @@ import { IncomingMessage, Server, ServerResponse } from 'http';
 import fastifyCompress from 'fastify-compress';
 import fastifyCors from 'fastify-cors';
 import fastifySession from '@fastify/secure-session';
+import fastifyMultipart from '@fastify/multipart';
 import app from './app';
 import authRoute from './routes/auth';
 import adminAuthRoute from './routes/admin/auth';
@@ -14,6 +15,10 @@ import mongo from './plugins/mongo';
 import path from 'path';
 import fs from 'fs';
 import jwt from './plugins/jwt';
+import filtersRoute from './routes/admin/filter';
+import productRoute from './routes/admin/product';
+import subcategoryRoute from './routes/admin/subcategory';
+import categoryRoute from './routes/admin/category';
 
 const fastify: FastifyInstance<Server, IncomingMessage, ServerResponse> = Fastify({
   logger: false,
@@ -40,12 +45,17 @@ const start = async () => {
     await fastify.register(jwt);
     await fastify.register(fastifyCompress);
     await fastify.register(fastifyCors, { origin: '*' });
+    await fastify.register(fastifyMultipart, { attachFieldsToBody: true });
 
     //routes
     await fastify.register(authRoute);
 
     //admin routes
     await fastify.register(adminAuthRoute, { prefix: 'admin' });
+    await fastify.register(filtersRoute, { prefix: 'admin' });
+    await fastify.register(productRoute, { prefix: 'admin' });
+    await fastify.register(subcategoryRoute, { prefix: 'admin' });
+    await fastify.register(categoryRoute, { prefix: 'admin' });
 
     await fastify
       .listen(fastify.appConfig.port)
