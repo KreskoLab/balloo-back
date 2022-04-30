@@ -1,4 +1,4 @@
-import { Lang } from '../../models/Filter';
+import { Lang } from '../../models/Lang';
 
 export interface RequestBodyI {
   names: Lang[];
