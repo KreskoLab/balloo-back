@@ -7,6 +7,7 @@ import fastifyCompress from 'fastify-compress';
 import fastifyCors from 'fastify-cors';
 import fastifySession from '@fastify/secure-session';
 import fastifyMultipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
 import app from './app';
 import authRoute from './routes/auth';
 import adminAuthRoute from './routes/admin/auth';
@@ -38,6 +39,11 @@ fastify.register(fastifySession, {
     httpOnly: true,
     maxAge: 86400, // 1 day
   },
+});
+
+fastify.register(fastifyStatic, {
+  root: path.join(process.cwd(), 'images'),
+  prefix: '/images/',
 });
 
 const start = async () => {
