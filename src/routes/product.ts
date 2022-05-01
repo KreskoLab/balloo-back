@@ -36,6 +36,13 @@ const productUserRoute: FastifyPluginAsync = async (fastify) => {
                 cond: { $eq: ['$$property.lang', lang] },
               },
             },
+            description: {
+              $filter: {
+                input: '$description',
+                as: 'item',
+                cond: { $eq: ['$$item.lang', lang] },
+              },
+            },
           },
         },
         {
@@ -47,6 +54,7 @@ const productUserRoute: FastifyPluginAsync = async (fastify) => {
             code: 1,
             quantity: 1,
             properties: 1,
+            description: { $toString: { $arrayElemAt: ['$description.value', 0] } },
             name: { $toString: { $arrayElemAt: ['$name.value', 0] } },
           },
         },
