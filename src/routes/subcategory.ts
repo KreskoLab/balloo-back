@@ -67,21 +67,19 @@ const subcategoryUserRoute: FastifyPluginAsync = async (fastify, opts) => {
         },
       },
       {
-        $addFields: {
-          filters: { $arrayElemAt: ['$filters', 0] },
-        },
-      },
-      {
-        $group: {
-          _id: { $toString: { $arrayElemAt: ['$products.name', 0] } },
-          filters: { $push: '$filters' },
-        },
+        $unwind: '$products',
       },
       {
         $project: {
-          name: '$_id',
-          filters: 1,
           _id: 0,
+          name: { $toString: '$products.name' },
+          filters: {
+            $filter: {
+              input: '$filters',
+              as: 'item',
+              cond: { $eq: ['$$item.slug', '$products.slug'] },
+            },
+          },
         },
       },
       {
