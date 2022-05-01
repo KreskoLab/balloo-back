@@ -39,25 +39,15 @@ const productUserRoute: FastifyPluginAsync = async (fastify) => {
           },
         },
         {
-          $addFields: {
+          $project: {
+            _id: 1,
+            slug: 1,
+            price: 1,
+            image: 1,
+            code: 1,
+            quantity: 1,
+            properties: 1,
             name: { $toString: { $arrayElemAt: ['$name.value', 0] } },
-          },
-        },
-        {
-          $addFields: {
-            properties: { $arrayElemAt: ['$properties', 0] },
-          },
-        },
-        {
-          $group: {
-            _id: '$_id',
-            name: { $first: '$name' },
-            slug: { $first: '$slug' },
-            price: { $first: '$price' },
-            image: { $first: '$image' },
-            code: { $first: '$code' },
-            quantity: { $first: '$quantity' },
-            properties: { $push: '$properties' },
           },
         },
       ]);
@@ -129,81 +119,68 @@ const productUserRoute: FastifyPluginAsync = async (fastify) => {
   });
 
   fastify.get<{ Params: RequestParamsI }>('/products/:subcategory', async (request, reply) => {
-    const locale = request.headers['accept-language'] || 'uk';
-    let subcategory = request.params.subcategory;
-    let query: any = request.query;
-    let matchQuery: any = { $and: [] };
-    let emptyQuery = false;
+    const locale = request.headers['accept-language'];
 
-    if (query) {
-      for (const item in query) {
-        matchQuery['$and'].push({
-          'properties.valueSlug': Array.isArray(query[item]) ? { $in: query[item] } : query[item],
-          'properties.slug': item,
-        });
+    if (locale !== 'uk' && locale !== 'ru') {
+      reply.code(406).send('Only uk or ru accept-language');
+    } else {
+      let subcategory = request.params.subcategory;
+      let query: any = request.query;
+      let matchQuery: any = { $and: [] };
+
+      if (query) {
+        for (const item in query) {
+          matchQuery['$and'].push({
+            'properties.valueSlug': Array.isArray(query[item]) ? { $in: query[item] } : query[item],
+            'properties.slug': item,
+          });
+        }
+
+        if (matchQuery['$and'].length === 0) {
+          matchQuery = {
+            'properties.valueSlug': { $exists: true },
+            'properties.slug': { $exists: true },
+          };
+        }
       }
 
-      if (matchQuery['$and'].length === 0) {
-        matchQuery = {
-          'properties.valueSlug': { $exists: true },
-          'properties.slug': { $exists: true },
-        };
+      const products = await ProductModel.aggregate([
+        {
+          $match: { subcategory: new mongoose.Types.ObjectId(subcategory) },
+        },
+        {
+          $project: {
+            image: 1,
+            price: 1,
+            slug: 1,
+            name: {
+              $filter: {
+                input: '$name',
+                as: 'item',
+                cond: { $eq: ['$$item.lang', locale] },
+              },
+            },
+            properties: {
+              $filter: {
+                input: '$properties',
+                as: 'property',
+                cond: { $eq: ['$$property.lang', locale] },
+              },
+            },
+          },
+        },
+        {
+          $addFields: {
+            name: { $toString: { $arrayElemAt: ['$name.value', 0] } },
+          },
+        },
+        {
+          $match: matchQuery,
+        },
+      ]);
 
-        emptyQuery = true;
-      }
+      reply.code(200).send(products);
     }
-
-    const products = await ProductModel.aggregate([
-      {
-        $match: { subcategory: new mongoose.Types.ObjectId(subcategory) },
-      },
-      {
-        $project: {
-          image: 1,
-          price: 1,
-          slug: 1,
-          name: {
-            $filter: {
-              input: '$name',
-              as: 'item',
-              cond: { $eq: ['$$item.lang', locale] },
-            },
-          },
-          properties: {
-            $filter: {
-              input: '$properties',
-              as: 'property',
-              cond: { $eq: ['$$property.lang', locale] },
-            },
-          },
-        },
-      },
-      {
-        $addFields: {
-          name: { $toString: { $arrayElemAt: ['$name.value', 0] } },
-        },
-      },
-      {
-        $addFields: {
-          properties: { $arrayElemAt: ['$properties', 0] },
-        },
-      },
-      {
-        $group: {
-          _id: '$_id',
-          name: { $first: '$name' },
-          slug: { $first: '$slug' },
-          price: { $first: '$price' },
-          image: { $first: '$image' },
-          properties: { $push: '$properties' },
-        },
-      },
-      {
-        $match: emptyQuery ? matchQuery : matchQuery['$and'],
-      },
-    ]);
-
-    reply.code(200).send(products);
   });
 };
 
