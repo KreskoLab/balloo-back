@@ -6,4 +6,5 @@ export interface RequestFormI {
   quantity: any;
   code: any;
   properties: any;
+  description: any;
 }

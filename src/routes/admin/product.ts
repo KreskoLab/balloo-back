@@ -37,6 +37,7 @@ const productRoute: FastifyPluginAsync = async (fastify, options) => {
     const form = request.body;
 
     const names: Lang[] = JSON.parse(form.name.value);
+    const descriptions: Lang[] = form.description ? JSON.parse(form.description.value) : [];
 
     const productProperties: Property[] = [];
     const formProperties: Lang[] = JSON.parse(form.properties.value);
@@ -61,6 +62,7 @@ const productRoute: FastifyPluginAsync = async (fastify, options) => {
 
         const product = new ProductModel({
           name: names,
+          description: descriptions,
           slug: slugItem(names[0].value),
           subcategory: form.subcategory.value,
           image: imageName,
