@@ -53,9 +53,9 @@ const productRoute: FastifyPluginAsync = async (fastify, options) => {
           productProperties.push({
             lang: filter.lang,
             name: filter.value,
-            slug: slugItem(filter.value),
-            value: formProperties.find((item) => item.lang === filter.lang)!.value,
-            valueSlug: slugItem(formProperties.find((item) => item.lang === filter.lang)!.value),
+            slug: slugItem(filter.value).toLowerCase(),
+            value: formProperties[index].value,
+            valueSlug: slugItem(formProperties[index].value).toLowerCase(),
           });
         });
 
