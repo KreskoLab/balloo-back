@@ -34,7 +34,7 @@ const appConfig = {
     salt: loadEnv('SECURE_SESSION_SALT'),
   },
   frontendURL: loadEnv('FRONTEND_URL'),
-  port: 8000,
+  port: loadEnv('PORT'),
   mongoURI: loadEnv('MONGO_URI'),
   mongoDB: loadEnv('MONGO_DB'),
 };
