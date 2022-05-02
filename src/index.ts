@@ -72,7 +72,7 @@ const start = async () => {
     await fastify.register(categoryRoute, { prefix: 'admin' });
 
     await fastify
-      .listen(fastify.appConfig.port)
+      .listen(fastify.appConfig.port, '0.0.0.0')
       .then(() => console.log(`🎉 Server started at ${fastify.appConfig.port} port`));
   } catch (err) {
     console.log(err);
