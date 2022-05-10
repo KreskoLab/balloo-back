@@ -3,8 +3,8 @@ dotenv.config({ path: __dirname + '/../.env' });
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { IncomingMessage, Server, ServerResponse } from 'http';
-import fastifyCompress from 'fastify-compress';
-import fastifyCors from 'fastify-cors';
+import fastifyCompress from '@fastify/compress';
+import fastifyCors from '@fastify/cors';
 import fastifySession from '@fastify/secure-session';
 import fastifyMultipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
