@@ -16,7 +16,7 @@ export type Product = {
   price: number;
   quantity: number;
   code: string;
-  image: string;
+  image: string[];
   subcategory: string;
   properties: Property[];
 };
@@ -50,8 +50,7 @@ const productSchema = new Schema({
     required: true,
   },
   image: {
-    type: String,
-    unique: true,
+    type: Array,
     required: true,
   },
   subcategory: {
