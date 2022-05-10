@@ -3,6 +3,14 @@ import { constants } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import slugify from 'slugify';
 import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+  secure: true,
+});
 
 export async function saveImage(file: any): Promise<string> {
   await folderExist();
@@ -14,7 +22,13 @@ export async function saveImage(file: any): Promise<string> {
 
   await fs.writeFile(folder + name + ext, buffer);
 
-  return name + ext;
+  const image = await cloudinary.uploader.upload(folder + name + ext, {
+    folder: 'balloo',
+  });
+
+  fs.unlink(folder + name + ext);
+
+  return image.public_id + ext;
 }
 
 async function folderExist(): Promise<void> {
@@ -25,9 +39,8 @@ async function folderExist(): Promise<void> {
   }
 }
 
-export async function removeImage(image: string): Promise<void> {
-  const folder = process.cwd() + '/images/';
-  await fs.rm(folder + image);
+export function removeImage(image: string): void {
+  cloudinary.uploader.destroy(path.parse(image).name);
 }
 
 export function slugItem(item: string): string {
