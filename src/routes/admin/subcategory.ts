@@ -49,7 +49,7 @@ const subcategoryRoute: FastifyPluginAsync = async (fastify, opts) => {
         });
 
         if (res) {
-          if (form.image) await removeImage(res.image);
+          if (form.image) removeImage(res.image);
           reply.code(200).send();
         } else reply.code(404).send();
       } else reply.code(404).send();
