@@ -19,7 +19,7 @@ const productRoute: FastifyPluginAsync = async (fastify, options) => {
           await ProductModel.findByIdAndRemove(id).then(async (doc) => {
             if (doc) {
               await SubcategoryModel.findOneAndUpdate({ products: doc._id }, { $pull: { products: doc._id } });
-              await removeImage(doc.image);
+              //await removeImage(doc.image);
 
               reply.code(200).send();
             }
@@ -30,6 +30,37 @@ const productRoute: FastifyPluginAsync = async (fastify, options) => {
       } else {
         reply.code(422).send('Product id is required');
       }
+    },
+  );
+
+  fastify.put<{ Body: RequestFormI; Params: RequestParamsI }>(
+    '/product/:id',
+    { preHandler: [fastify.isAdmin] },
+    async (request, reply) => {
+      const id = request.params.id;
+      const form = request.body;
+
+      const product = await ProductModel.findById(id);
+
+      if (product) {
+        const names: Lang[] = form.name ? JSON.parse(form.name.value) : product.name;
+        const images: string[] = [];
+
+        if (form.image) {
+          for (const image of form.image) {
+            const imageName = await saveImage(image);
+            images.push(imageName);
+          }
+        }
+
+        const res = await ProductModel.findByIdAndUpdate(id, {
+          name: names,
+          slug: slugItem(names[0].value),
+          image: images.length ? images : product.image,
+        });
+
+        reply.code(200).send(res);
+      } else reply.code(404).send();
     },
   );
 
