@@ -101,6 +101,7 @@ const productUserRoute: FastifyPluginAsync = async (fastify) => {
           image: 1,
           subcategory: 1,
           slug: 1,
+          quantity: 1,
           name: {
             $filter: {
               input: '$name',
@@ -111,14 +112,21 @@ const productUserRoute: FastifyPluginAsync = async (fastify) => {
         },
       },
       {
-        $unwind: '$name',
-      },
-      {
         $lookup: {
           from: 'subcategories',
           localField: 'subcategory',
           foreignField: '_id',
           as: 'subcategory',
+        },
+      },
+      {
+        $project: {
+          price: 1,
+          image: 1,
+          subcategory: 1,
+          quantity: 1,
+          slug: 1,
+          name: { $toString: { $arrayElemAt: ['$name.value', 0] } },
         },
       },
     ]);
