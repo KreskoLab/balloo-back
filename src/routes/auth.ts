@@ -1,4 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
+import { RequestFormI } from '../interfaces/user/request-form.interface';
+import { UserModel } from '../models/User';
 
 const authRoute: FastifyPluginAsync = async (fastify, opts) => {
   fastify.get(
@@ -32,6 +34,15 @@ const authRoute: FastifyPluginAsync = async (fastify, opts) => {
 
   fastify.get('/me', async (request, reply) => {
     if (request.user) {
+      reply.code(200).send(request.user);
+    } else {
+      reply.code(401).send();
+    }
+  });
+
+  fastify.put<{ Body: RequestFormI }>('/me', async (request, reply) => {
+    if (request.user) {
+      await UserModel.findByIdAndUpdate(request.body._id, request.body);
       reply.code(200).send(request.user);
     } else {
       reply.code(401).send();
