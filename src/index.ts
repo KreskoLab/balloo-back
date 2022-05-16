@@ -36,6 +36,7 @@ fastify.register(fastifySession, {
   cookie: {
     path: '/',
     httpOnly: true,
+    domain: process.env.FRONTEND_DOMAIN,
     maxAge: 86400, // 1 day
   },
 });
