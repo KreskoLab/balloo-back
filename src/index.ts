@@ -28,6 +28,7 @@ const fastify: FastifyInstance<Server, IncomingMessage, ServerResponse> = Fastif
   logger: false,
   bodyLimit: 12485760, // 10 MB
   maxParamLength: 120,
+  trustProxy: true,
 });
 
 fastify.register(fastifySession, {
