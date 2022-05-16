@@ -32,10 +32,11 @@ const fastify: FastifyInstance<Server, IncomingMessage, ServerResponse> = Fastif
 
 fastify.register(fastifySession, {
   key: fs.readFileSync(path.join(process.cwd(), 'secret-key')),
-  cookieName: 'session-id',
+  cookieName: 'balloo-session',
   cookie: {
     path: '/',
     httpOnly: true,
+    secure: false,
     domain: process.env.FRONTEND_DOMAIN,
     maxAge: 86400, // 1 day
   },
