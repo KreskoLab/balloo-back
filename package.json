@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --watch src/**/*.ts --ignore src/**/*.spec.ts --exec ts-node src/index.ts",
-    "start": "npm run build && npx @fastify/secure-session > secret-key && node build/index.js"
+    "start": "npx @fastify/secure-session > secret-key && node build/index.js"
   },
   "author": "",
   "license": "ISC",
