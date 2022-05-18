@@ -28,7 +28,7 @@ const authRoute: FastifyPluginAsync = async (fastify, opts) => {
   );
 
   fastify.get('/logout', async (request, reply) => {
-    await request.logOut();
+    request.session.delete();
     reply.code(200).send();
   });
 
