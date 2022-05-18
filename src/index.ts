@@ -37,7 +37,8 @@ fastify.register(fastifySession, {
   cookie: {
     path: '/',
     httpOnly: true,
-    secure: false,
+    secure: true,
+    sameSite: 'strict',
     domain: process.env.FRONTEND_DOMAIN,
     maxAge: 86400, // 1 day
   },
